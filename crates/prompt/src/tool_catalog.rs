@@ -55,7 +55,7 @@ const fn optional(name: &'static str, kind: ParameterKind) -> Parameter {
 }
 
 const READ: ToolSpecification = ToolSpecification {
-    description: "Read a file with line numbers, 200 lines per call.",
+    description: "Read a file with line numbers.",
     parameters: &[
         required("path", NON_EMPTY_TEXT),
         optional(
@@ -69,7 +69,7 @@ const READ: ToolSpecification = ToolSpecification {
             "limit",
             ParameterKind::Integer {
                 minimum: 1,
-                maximum: 400,
+                maximum: i64::MAX,
             },
         ),
     ],
@@ -300,7 +300,7 @@ mod tests {
         assert_eq!(
             lines,
             [
-                "read(path, offset?, limit?): Read a file with line numbers, 200 lines per call.",
+                "read(path, offset?, limit?): Read a file with line numbers.",
                 "glob(pattern): List the file paths that match a glob pattern, for example src/**/*.rs.",
                 "grep(pattern, path?, glob?): Search file content by regular expression; path limits it to a file or directory, glob to file names.",
                 "edit(path, old, new, all?): Replace the exact text old with new; copy old without line numbers; all=true replaces each match.",
@@ -323,7 +323,7 @@ mod tests {
     fn native_declaration_wire_json() {
         assert_eq!(
             serde_json::to_string(&ToolDeclaration(ToolName::Read)).expect("a declaration encodes"),
-            r#"{"type":"function","function":{"name":"read","description":"Read a file with line numbers, 200 lines per call.","parameters":{"type":"object","properties":{"path":{"type":"string"},"offset":{"type":"integer"},"limit":{"type":"integer"}},"required":["path"]}}}"#
+            r#"{"type":"function","function":{"name":"read","description":"Read a file with line numbers.","parameters":{"type":"object","properties":{"path":{"type":"string"},"offset":{"type":"integer"},"limit":{"type":"integer"}},"required":["path"]}}}"#
         );
         assert_eq!(
             serde_json::to_string(&ToolDeclaration(ToolName::Edit)).expect("a declaration encodes"),
@@ -339,7 +339,7 @@ mod tests {
             .expect("the declarations encode")
             .chars()
             .count();
-        assert_eq!(size, 1654);
+        assert_eq!(size, 1634);
         assert!(size <= 2400);
     }
 }

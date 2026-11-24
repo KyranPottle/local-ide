@@ -473,6 +473,51 @@ async fn the_step_limit_ends_the_run() {
 }
 
 #[tokio::test]
+async fn a_read_keeps_text_past_the_tool_output_limit() {
+    let harness = Harness::start().await;
+    let session = harness.create_session("alpha").await;
+    harness
+        .mock
+        .push_text(&text_call("read", json!({ "path": "wide.rs" })));
+    harness.mock.push_text("The file is whole.");
+    let file = "x".repeat(2500);
+    let mut browser = Browser::connect(&harness).await.answer("read", &file);
+
+    let frames = browser.run(&session.id, "Read wide.rs").await;
+
+    assert_eq!(outcome(&frames), RunOutcome::Complete);
+    assert_eq!(
+        tool_results(&harness.events(&session.id).await),
+        [("read".to_owned(), file, false)]
+    );
+}
+
+#[tokio::test]
+async fn a_read_past_the_context_window_is_an_error() {
+    let harness = Harness::start().await;
+    let session = harness.create_session("tiny").await;
+    harness
+        .mock
+        .push_text(&text_call("read", json!({ "path": "big.rs" })));
+    harness.mock.push_text("The file does not fit.");
+    let mut browser = Browser::connect(&harness)
+        .await
+        .answer("read", &"x".repeat(5250));
+
+    let frames = browser.run(&session.id, "Read big.rs").await;
+
+    assert_eq!(outcome(&frames), RunOutcome::Complete);
+    assert_eq!(
+        tool_results(&harness.events(&session.id).await),
+        [(
+            "read".to_owned(),
+            "error: this read is 1500 tokens and the context window is 1500 tokens. Use offset and limit for a smaller range.".to_owned(),
+            true,
+        )]
+    );
+}
+
+#[tokio::test]
 async fn attachments_are_capped_at_the_tool_output_limit() {
     let harness = Harness::start().await;
     let session = harness.create_session("alpha").await;

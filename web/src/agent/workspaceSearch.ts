@@ -58,7 +58,7 @@ async function readSearchableText(fileSystem: WorkspaceFileSystem, path: string)
   try {
     return await fileSystem.readTextFile(path)
   } catch (error) {
-    if (error instanceof WorkspaceFileError && (error.kind === "binary" || error.kind === "too_large")) return undefined
+    if (error instanceof WorkspaceFileError && error.kind === "binary") return undefined
     throw error
   }
 }

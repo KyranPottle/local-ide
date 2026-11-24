@@ -72,8 +72,8 @@ A cancel, a failure, or a closed WebSocket connection also ends the run.
    Reason: a model switch and a fork need no conversion.
 5. **Rendering is prefix-stable between compaction events.**
    Reason: llama.cpp reuses the prompt cache only for an unchanged prefix.
-6. **Six tools with one-line descriptions, a small system prompt, and capped tool output.**
-   Reason: a large system prompt and large tool descriptions overload small models.
+6. **Six tools with one-line descriptions, a small system prompt, and tool output that fits the context window.**
+   Reason: a large system prompt and large tool descriptions overload small models. A cut file read makes the model call read again.
 7. **A tool-call codec per model profile, native or text.**
    Reason: some models emit native tool calls, and others emit the text format.
 8. **Web UI: SolidJS, Vite, TypeScript, CodeMirror 6, CSS custom properties, self-hosted Inter and JetBrains Mono.**

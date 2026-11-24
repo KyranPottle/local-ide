@@ -25,7 +25,7 @@ pub(crate) fn message_characters(message: &ChatMessage) -> usize {
     visible + MESSAGE_OVERHEAD_CHARACTERS
 }
 
-pub(crate) fn estimate_tokens(characters: usize, chars_per_token: f32, scale: f32) -> u32 {
+pub fn estimate_tokens(characters: usize, chars_per_token: f32, scale: f32) -> u32 {
     (characters as f64 / f64::from(chars_per_token) * f64::from(scale)).ceil() as u32
 }
 

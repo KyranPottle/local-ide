@@ -6,8 +6,8 @@ use futures_util::StreamExt;
 use inference::{ChatChunk, ChatRequest, NativeToolCall};
 use prompt::{
     AgentKind, ChatMessage, ChatToolCall, CompactionPlan, PromptInput, RenderedPrompt,
-    StreamSplitter, calibrate_token_scale, cap_output, offered_tools, parse_reply, plan_compaction,
-    render, validate_tool_call,
+    StreamSplitter, calibrate_token_scale, cap_output, estimate_tokens, offered_tools, parse_reply,
+    plan_compaction, render, validate_tool_call,
 };
 use protocol::{
     Attachment, CompactionKind, DeltaChannel, Event, EventBody, ModelProfile,
@@ -448,7 +448,7 @@ impl Run {
         .await?;
         agent.last_text = parsed.text;
         for (call, problem) in &failed_calls {
-            self.record_result(&session.id, call, ToolOutput::error(problem.as_str()))
+            self.record_result(&session, call, ToolOutput::error(problem.as_str()))
                 .await?;
         }
 
@@ -465,7 +465,7 @@ impl Run {
         agent.problem_turns = 0;
         for call in &parsed.tool_calls {
             let output = self.execute_call(agent, &session, &offered, call).await?;
-            self.record_result(&session.id, call, output).await?;
+            self.record_result(&session, call, output).await?;
         }
         Ok(None)
     }
@@ -732,18 +732,49 @@ impl Run {
 
     async fn record_result(
         &self,
-        session_id: &str,
+        session: &Session,
         call: &ToolCall,
         output: ToolOutput,
     ) -> Result<(), Halt> {
+        let output = self.reject_oversized_read(session, call, output);
+        // A file read stays whole because the context window is its only size limit
+        let text = if call.name == ToolName::Read.as_str() {
+            output.text
+        } else {
+            cap_output(&output.text, self.engine.settings.tool_output_limit)
+        };
         let body = EventBody::ToolResult {
             call_id: call.id.clone(),
             name: call.name.clone(),
-            output: cap_output(&output.text, self.engine.settings.tool_output_limit),
+            output: text,
             is_error: output.is_error,
         };
-        self.record(session_id, body).await?;
+        self.record(&session.id, body).await?;
         Ok(())
+    }
+
+    fn reject_oversized_read(
+        &self,
+        session: &Session,
+        call: &ToolCall,
+        output: ToolOutput,
+    ) -> ToolOutput {
+        if call.name != ToolName::Read.as_str() || output.is_error {
+            return output;
+        }
+        let profile = self.engine.catalog.profile(&session.model);
+        let tokens = estimate_tokens(
+            output.text.chars().count(),
+            profile.chars_per_token,
+            self.engine.token_scale(&profile.id),
+        );
+        if tokens < profile.context_budget {
+            return output;
+        }
+        ToolOutput::error(format!(
+            "error: this read is {tokens} tokens and the context window is {} tokens. Use offset and limit for a smaller range.",
+            profile.context_budget
+        ))
     }
 
     async fn record(&self, session_id: &str, body: EventBody) -> Result<Event, Halt> {

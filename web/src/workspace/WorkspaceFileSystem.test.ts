@@ -125,16 +125,10 @@ describe("readTextFile", () => {
     expect(text.endsWith("a\0")).toBe(true)
   })
 
-  test("rejects a file above 2 MB", async () => {
+  test("reads a file above 2 MB", async () => {
     const fileSystem = workspace({ "big.log": "a".repeat(2_097_153) })
 
-    await expect(fileSystem.readTextFile("big.log")).rejects.toThrow("error: file larger than 2 MB: big.log")
-  })
-
-  test("reads a file of exactly 2 MB", async () => {
-    const fileSystem = workspace({ "limit.log": "a".repeat(2_097_152) })
-
-    expect((await fileSystem.readTextFile("limit.log")).length).toBe(2_097_152)
+    expect((await fileSystem.readTextFile("big.log")).length).toBe(2_097_153)
   })
 
   test("reports a missing file and a directory in the place of a file", async () => {

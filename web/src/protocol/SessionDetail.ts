@@ -5,6 +5,6 @@ import type { Session } from "./Session";
 
 export type SessionDetail = { session: Session, events: Array<Event>, 
 /**
- * Estimate for the session model with all tools of the session mode
+ * Estimate for the session model with each workspace tool of the mode, plus Delegate for a primary agent session
  */
 context: ContextReport, };

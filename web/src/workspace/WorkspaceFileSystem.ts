@@ -9,8 +9,6 @@ export const IGNORED_DIRECTORY_NAMES: ReadonlySet<string> = new Set([
   ".venv",
   "__pycache__",
 ])
-export const MAX_TEXT_FILE_MEGABYTES = 2
-const MAX_TEXT_FILE_BYTES = MAX_TEXT_FILE_MEGABYTES * 1024 * 1024
 const SNAPSHOT_ENTRY_LIMIT = 60
 const BINARY_PROBE_BYTES = 8000
 
@@ -22,7 +20,6 @@ export type WorkspaceFileErrorKind =
   | "not_a_file"
   | "not_a_directory"
   | "binary"
-  | "too_large"
 
 // The text is the tool output that the model reads
 const errorText: Record<WorkspaceFileErrorKind, (path: string) => string> = {
@@ -31,7 +28,6 @@ const errorText: Record<WorkspaceFileErrorKind, (path: string) => string> = {
   not_a_file: (path) => `error: not a file: ${path}`,
   not_a_directory: (path) => `error: not a directory: ${path}`,
   binary: (path) => `error: binary file: ${path}`,
-  too_large: (path) => `error: file larger than ${MAX_TEXT_FILE_MEGABYTES} MB: ${path}`,
 }
 
 export class WorkspaceFileError extends Error {
@@ -139,7 +135,6 @@ export class WorkspaceFileSystem {
   async readTextFile(path: string): Promise<string> {
     const handle = await this.#file(path, false)
     const file = await handle.getFile()
-    if (file.size > MAX_TEXT_FILE_BYTES) throw new WorkspaceFileError("too_large", path)
     const bytes = new Uint8Array(await file.arrayBuffer())
     if (bytes.subarray(0, BINARY_PROBE_BYTES).includes(0)) throw new WorkspaceFileError("binary", path)
     return new TextDecoder().decode(bytes)

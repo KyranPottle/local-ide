@@ -2,10 +2,7 @@ import type { JsonValue } from "../protocol"
 import { ROOT_DIRECTORY } from "../workspace/WorkspaceFileSystem"
 import type { SearchRequest } from "./workspaceSearch"
 
-const READ_DEFAULT_LIMIT = 200
-const READ_MAX_LIMIT = 400
-
-export type ReadArguments = { readonly path: string, readonly offset: number, readonly limit: number }
+export type ReadArguments = { readonly path: string, readonly offset: number, readonly limit: number | undefined }
 export type EditArguments = { readonly path: string, readonly old: string, readonly new: string, readonly all: boolean }
 export type WriteArguments = { readonly path: string, readonly content: string }
 
@@ -37,13 +34,23 @@ function optionalString(object: JsonObject, key: string): string | undefined {
   return requiredString(object, key)
 }
 
-function optionalPositiveInteger(object: JsonObject, key: string, fallback: number): number {
-  const value = object[key]
-  if (value === undefined || value === null) return fallback
+function positiveInteger(value: JsonValue | undefined, key: string): number {
   if (typeof value !== "number" || !Number.isSafeInteger(value) || value < 1) {
     throw new Error(`argument ${key} must be an integer of 1 or more`)
   }
   return value
+}
+
+function optionalPositiveInteger(object: JsonObject, key: string, fallback: number): number {
+  const value = object[key]
+  if (value === undefined || value === null) return fallback
+  return positiveInteger(value, key)
+}
+
+function optionalLimit(object: JsonObject): number | undefined {
+  const value = object.limit
+  if (value === undefined || value === null) return undefined
+  return positiveInteger(value, "limit")
 }
 
 function optionalBoolean(object: JsonObject, key: string): boolean {
@@ -59,7 +66,7 @@ const parsers: Record<WorkspaceToolName, (object: JsonObject) => ToolArguments> 
     arguments: {
       path: requiredString(object, "path"),
       offset: optionalPositiveInteger(object, "offset", 1),
-      limit: Math.min(optionalPositiveInteger(object, "limit", READ_DEFAULT_LIMIT), READ_MAX_LIMIT),
+      limit: optionalLimit(object),
     },
   }),
   glob: (object) => ({ tool: "glob", arguments: { kind: "glob", pattern: requiredString(object, "pattern") } }),

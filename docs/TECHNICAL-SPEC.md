@@ -303,12 +303,12 @@ A path is a workspace-relative POSIX path.
 A leading `/` or a `..` segment gives `error: path outside workspace`.
 
 ```text
-read   { path: string, offset?: integer >= 1 (default 1), limit?: integer 1..400 (default 200) }
-       Output: one line per file line as `{line_number}|{text}`.
-       A line longer than 500 characters ends with ` [line cut at 500 characters]`.
+read   { path: string, offset?: integer >= 1 (default 1), limit?: integer >= 1 }
+       Output: one line per file line as `{line_number}|{text}`, from offset through the end of the file.
+       A limit stops after that many lines.
        When lines remain, a last line `[lines A-B of N. Call read with offset=B+1 for more.]`.
        Errors: `error: file not found: <path>`, `error: not a file: <path>`, `error: binary file: <path>`,
-       `error: file larger than 2 MB: <path>`, `error: offset N is past the end of <path> (M lines)`.
+       `error: offset N is past the end of <path> (M lines)`.
 
 glob   { pattern: string }
        Output: matching file paths, sorted, one per line, at most 100,
@@ -318,7 +318,7 @@ glob   { pattern: string }
 grep   { pattern: string (JavaScript regular expression), path?: string (file or directory), glob?: string }
        Output: `{path}:{line_number}|{text}` per match, text cut at 200 characters, at most 50 matches,
        then `[more matches not shown. Narrow the pattern or the path.]`.
-       Skips binary files and files larger than 2 MB.
+       Skips binary files.
        No match: `no matches`.
 
 edit   { path: string, old: string, new: string, all?: boolean (default false) }
@@ -390,8 +390,11 @@ Run limits:
 - A run stops at `step_limit` model requests, with outcome `StepLimit`.
 - One reply holds at most `reply_reserve * 16` characters of visible and reasoning text together.
 - A longer reply fails the run with `the model reply passed the size limit`.
-- The engine caps each tool output at `tool_output_limit` characters.
+- The engine caps each tool output except a `read` at `tool_output_limit` characters.
 - It then appends a line `[output truncated at N characters]`.
+- A `read` result stays whole when its token estimate is less than `context_budget`.
+- The estimate uses `chars_per_token` and the model scale.
+- A larger read is stored as an error: `error: this read is N tokens and the context window is M tokens. Use offset and limit for a smaller range.`
 - A call with the same name and arguments as the previous call of the agent gets `error: duplicate call. Use the earlier result.`.
 - An unknown or unoffered tool name gets `error: unknown tool: <name>`, and the run continues.
 - Invalid arguments get `error: invalid arguments for <name>: <reason>`.
@@ -414,7 +417,7 @@ An unknown key fails the start.
 | `data_dir` | `"./var"` | Directory that holds `sessions.sqlite`. |
 | `assets_dir` | `"./web/dist"` | Web build that the engine serves at `/`. It must hold `index.html`. |
 | `step_limit` | `25` | Maximum number of model requests in one run. At least 1. |
-| `tool_output_limit` | `6000` | Character limit of one tool output. At least 1. |
+| `tool_output_limit` | `6000` | Character limit of one tool output other than a file read. At least 1. |
 | `tool_timeout_seconds` | `300` | Longest wait for the browser to answer one tool call. |
 | `system_rules` | absent | Instructions for every new session. At most 2000 characters. Blank means none. |
 | `inference.base_url` | `"http://127.0.0.1:8080/v1"` | Base URL of the llama-swap server. Set this to your server. |

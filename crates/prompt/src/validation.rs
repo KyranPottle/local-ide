@@ -195,11 +195,6 @@ mod tests {
             ),
             (
                 "read",
-                json!({ "path": "a", "limit": 401 }),
-                "error: invalid arguments for read: limit must be at most 400",
-            ),
-            (
-                "read",
                 json!({ "path": "a", "limit": 0 }),
                 "error: invalid arguments for read: limit must be at least 1",
             ),

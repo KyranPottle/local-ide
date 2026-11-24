@@ -2,7 +2,7 @@ import { createSignal } from "solid-js"
 import type { ClientFrame, ToolCall } from "../protocol"
 import { WorkspaceFileError, type WorkspaceFileSystem } from "../workspace/WorkspaceFileSystem"
 import { documentState, type OpenWorkspace } from "../workspace/workspaceStore"
-import { cutReadOutputLine, splitLines } from "./textLines"
+import { splitLines } from "./textLines"
 import {
   isWorkspaceToolName,
   parseToolArguments,
@@ -94,9 +94,10 @@ async function readFile(workspace: OpenWorkspace, { path, offset, limit }: ReadA
   if (offset > Math.max(lines.length, 1)) {
     return toolFailure(`error: offset ${offset} is past the end of ${path} (${lines.length} lines)`)
   }
-  const shown = lines.slice(offset - 1, offset - 1 + limit)
+  const end = limit === undefined ? lines.length : Math.min(lines.length, offset - 1 + limit)
+  const shown = lines.slice(offset - 1, end)
   const last = offset - 1 + shown.length
-  const output = shown.map((line, index) => `${offset + index}|${cutReadOutputLine(line)}`)
+  const output = shown.map((line, index) => `${offset + index}|${line}`)
   if (last < lines.length) {
     output.push(`[lines ${offset}-${last} of ${lines.length}. Call read with offset=${last + 1} for more.]`)
   }

@@ -18,7 +18,7 @@ mod validation;
 mod fixtures;
 
 pub use compaction::{CompactionPlan, plan_compaction};
-pub use estimate::calibrate_token_scale;
+pub use estimate::{calibrate_token_scale, estimate_tokens};
 pub use message::{ChatMessage, ChatToolCall};
 pub use render::{PromptInput, RenderError, RenderedPrompt, context_report, render};
 pub use reply::{ParsedReply, parse_reply};

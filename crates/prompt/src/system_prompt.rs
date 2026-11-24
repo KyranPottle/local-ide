@@ -205,7 +205,7 @@ Rules:
     #[test]
     fn text_tool_block_with_all_six_tools_fits_1200_characters() {
         let block = tool_section(ToolCodec::Text, &ToolName::ALL, &[]);
-        assert_eq!(block.chars().count(), 809);
+        assert_eq!(block.chars().count(), 789);
         assert!(block.chars().count() <= 1200);
     }
 
@@ -222,7 +222,7 @@ To call a tool, write exactly this and then stop:
 Call one tool at a time. The result arrives in the next message.
 
 Tools:
-read(path, offset?, limit?): Read a file with line numbers, 200 lines per call.
+read(path, offset?, limit?): Read a file with line numbers.
 glob(pattern): List the file paths that match a glob pattern, for example src/**/*.rs."#
         );
     }

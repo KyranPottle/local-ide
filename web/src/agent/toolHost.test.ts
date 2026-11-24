@@ -62,54 +62,40 @@ describe("read", () => {
     })
   })
 
-  test("default limit is 200", async () => {
+  test("omitted limit returns the whole file", async () => {
     const lines = (await run("read", { path: "long.txt" })).output.split("\n")
-    expect(lines).toHaveLength(201)
-    expect(lines[199]).toBe("200|line 200")
-    expect(lines[200]).toBe("[lines 1-200 of 500. Call read with offset=201 for more.]")
+    expect(lines).toHaveLength(500)
+    expect(lines[0]).toBe("1|line 1")
+    expect(lines[499]).toBe("500|line 500")
   })
 
-  test("limit is capped at 400", async () => {
+  test("a limit past the end returns the rest of the file", async () => {
     const lines = (await run("read", { path: "long.txt", limit: 1000 })).output.split("\n")
-    expect(lines).toHaveLength(401)
-    expect(lines[400]).toBe("[lines 1-400 of 500. Call read with offset=401 for more.]")
+    expect(lines).toHaveLength(500)
+    expect(lines[499]).toBe("500|line 500")
   })
 
   test("empty file", async () => {
     expect(await run("read", { path: "empty.txt" })).toMatchObject({ output: "", is_error: false })
   })
 
-  test("cuts a line at 500 characters", async () => {
-    const longLine = "a".repeat(501)
-    const output = (await setup({ "wide.txt": longLine }).run("read", { path: "wide.txt" })).output
-    expect(output).toBe(`1|${"a".repeat(500)} [line cut at 500 characters]`)
-  })
-
-  test("leaves a line of 500 characters unchanged", async () => {
-    const exact = "b".repeat(500)
-    expect((await setup({ "exact.txt": exact }).run("read", { path: "exact.txt" })).output).toBe(`1|${exact}`)
-  })
-
-  test("does not split a surrogate pair at the cut", async () => {
-    const prefix = "c".repeat(499)
-    const emoji = "\u{1F600}"
-    const output = (await setup({ "emoji.txt": prefix + emoji }).run("read", { path: "emoji.txt" })).output
-    expect(output).toBe(`1|${prefix} [line cut at 500 characters]`)
+  test("returns a long line whole", async () => {
+    const longLine = `${"a".repeat(501)}\u{1F600}`
+    expect((await setup({ "wide.txt": longLine }).run("read", { path: "wide.txt" })).output).toBe(`1|${longLine}`)
   })
 
   test("errors", async () => {
-    const binary = setup({ "image.png": new Uint8Array([137, 80, 0, 71]), "big.txt": "x".repeat(2 * 1024 * 1024 + 1) })
+    const binary = setup({ "image.png": new Uint8Array([137, 80, 0, 71]), "note.txt": "x" })
     expect(await binary.run("read", { path: "missing.txt" })).toMatchObject({
       output: "error: file not found: missing.txt",
       is_error: true,
     })
     expect((await binary.run("read", { path: "image.png" })).output).toBe("error: binary file: image.png")
-    expect((await binary.run("read", { path: "big.txt" })).output).toBe("error: file larger than 2 MB: big.txt")
     expect((await binary.run("read", { path: 5 })).output).toBe("error: argument path must be a string")
-    expect((await binary.run("read", { path: "big.txt", offset: 0 })).output).toBe(
+    expect((await binary.run("read", { path: "note.txt", offset: 0 })).output).toBe(
       "error: argument offset must be an integer of 1 or more",
     )
-    expect((await binary.run("read", "big.txt")).output).toBe("error: arguments must be an object")
+    expect((await binary.run("read", "note.txt")).output).toBe("error: arguments must be an object")
   })
 })
 
@@ -178,13 +164,13 @@ describe("grep", () => {
     src: { "main.rs": "use std::io;\nfn main() {}\n", "lib.rs": "pub fn lib() {}\n", "app.ts": "function main() {}\n" },
     docs: { "notes.md": "main idea\n" },
     "image.bin": new Uint8Array([109, 97, 105, 110, 0]),
-    "big.txt": "main\n" + "x".repeat(2 * 1024 * 1024),
+    "root.txt": "main\n",
     node_modules: { "dep.js": "main\n" },
   })
 
   test("searches the workspace", async () => {
     expect(await run("grep", { pattern: "main" })).toMatchObject({
-      output: "docs/notes.md:1|main idea\nsrc/app.ts:1|function main() {}\nsrc/main.rs:2|fn main() {}",
+      output: "docs/notes.md:1|main idea\nsrc/app.ts:1|function main() {}\nsrc/main.rs:2|fn main() {}\nroot.txt:1|main",
       is_error: false,
     })
   })
