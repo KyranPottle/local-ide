@@ -1,0 +1,24 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# shellcheck source=stub_log.sh
+source "$(dirname "$0")/stub_log.sh"
+record_call "$@"
+
+serve_json="${SANDBOX}/scenario/serve.json"
+case "$*" in
+  "serve status --json") cat "$serve_json" ;;
+  "serve status")
+    perl -MJSON::PP -e 'local $/; my $c = decode_json(<STDIN>); print "https://$_ (tailnet only)\n" for sort keys %{ $c->{Web} || {} }' <"$serve_json"
+    ;;
+  "serve --bg --https="*)
+    PORT=${3#--https=} TARGET=$4 perl -MJSON::PP -e '
+      local $/;
+      my $c = decode_json(<STDIN>);
+      $c->{TCP}{$ENV{PORT}} = { HTTPS => JSON::PP::true };
+      $c->{Web}{"ide.example.ts.net:$ENV{PORT}"} = { Handlers => { "/" => { Proxy => $ENV{TARGET} } } };
+      print JSON::PP->new->canonical->encode($c);
+    ' <"$serve_json" >"${serve_json}.next"
+    mv "${serve_json}.next" "$serve_json"
+    ;;
+  *) exit 64 ;;
+esac

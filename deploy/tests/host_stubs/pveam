@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# shellcheck source=stub_log.sh
+source "$(dirname "$0")/stub_log.sh"
+record_call "$@"
+
+templates="${SANDBOX}/scenario/templates"
+case $1 in
+  list) cat "$templates" ;;
+  update) exit "$(scenario_value update_status 0)" ;;
+  available) cat "${SANDBOX}/scenario/available" ;;
+  download)
+    status=$(scenario_value download_status 0)
+    [[ $status -eq 0 ]] || exit "$status"
+    printf '%s:vztmpl/%s 120.00MB\n' "$2" "$3" >>"$templates"
+    ;;
+  *) exit 64 ;;
+esac

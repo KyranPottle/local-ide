@@ -1,0 +1,131 @@
+.welcome {
+  display: grid;
+  grid-template-rows: var(--top-bar-height) minmax(0, 1fr);
+  height: 100%;
+  overflow: auto;
+}
+
+.welcome-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding: 0 6px;
+}
+
+.welcome-content {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-self: center;
+  justify-self: center;
+  width: min(440px, 90vw);
+  padding-bottom: 48px;
+}
+
+.welcome-title {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.welcome-drop-target {
+  display: grid;
+  place-items: center;
+  height: 140px;
+  border: 1px dashed var(--border-strong);
+  border-radius: var(--radius-medium);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+}
+
+.welcome-notice {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-medium);
+  color: var(--warning);
+}
+
+.welcome-brave-title {
+  margin: 0 0 8px;
+  font-size: var(--font-size-ui);
+  font-weight: 600;
+}
+
+.welcome-brave-steps {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+  padding-left: 20px;
+  color: var(--text-primary);
+}
+
+.welcome-brave-address {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.welcome-brave-address code {
+  font-family: var(--font-code);
+  font-size: var(--font-size-code);
+  user-select: all;
+}
+
+.welcome-brave-copy-state {
+  color: var(--text-secondary);
+  font-size: var(--font-size-small);
+}
+
+.welcome-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.welcome-recent-title {
+  margin: 8px 0 4px;
+  color: var(--text-secondary);
+  font-size: var(--font-size-small);
+  font-weight: 500;
+}
+
+.welcome-recent-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: var(--radius-small);
+  transition: background-color var(--duration-fast);
+}
+
+.welcome-recent-item:hover {
+  background: var(--surface-hover);
+}
+
+.welcome-recent-open {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+  height: 28px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: var(--radius-small);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.welcome-recent-open .icon {
+  color: var(--text-tertiary);
+}
+
+.welcome-recent-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}

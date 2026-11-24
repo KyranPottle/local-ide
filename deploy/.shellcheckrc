@@ -1,0 +1,4 @@
+source-path=SCRIPTDIR
+external-sources=true
+# Remote commands are built locally on purpose, with each value quoted by printf %q
+disable=SC2029

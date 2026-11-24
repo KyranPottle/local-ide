@@ -1,0 +1,142 @@
+.ide {
+  display: grid;
+  grid-template-rows: var(--top-bar-height) minmax(0, 1fr) var(--status-bar-height);
+  /* Without the zero minimum, the widest editor line widens the page once the right panel is present */
+  grid-template-columns: minmax(0, 1fr);
+  height: 100%;
+}
+
+.top-bar {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 0 6px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-raised);
+}
+
+.top-bar-workspace {
+  overflow: hidden;
+  padding: 0 4px;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.top-bar-toolbar {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 4px;
+  margin-left: auto;
+}
+
+.ide-body {
+  display: flex;
+  min-height: 0;
+}
+
+.sidebar,
+.right-panel {
+  display: flex;
+  flex: none;
+  flex-direction: column;
+  min-height: 0;
+  background: var(--surface-raised);
+}
+
+.sidebar[hidden],
+.right-panel[hidden] {
+  display: none;
+}
+
+.sidebar-tabs {
+  display: flex;
+  flex: none;
+  gap: 4px;
+  height: var(--tab-strip-height);
+  padding: 0 8px;
+  border-bottom: 1px solid var(--border);
+}
+
+.sidebar-tab {
+  /* The negative margin puts the marker of the selected tab over the border of the strip */
+  margin-bottom: -1px;
+  padding: 0 6px;
+  border: 0;
+  border-bottom: 1px solid transparent;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--font-size-small);
+  font-weight: 500;
+  cursor: pointer;
+  transition: color var(--duration-fast);
+}
+
+.sidebar-tab:hover {
+  color: var(--text-primary);
+}
+
+.sidebar-tab[aria-selected="true"] {
+  border-bottom-color: var(--accent);
+  color: var(--text-primary);
+}
+
+.sidebar-panel {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.sidebar-panel[hidden] {
+  display: none;
+}
+
+.resize-separator {
+  position: relative;
+  z-index: 1;
+  flex: none;
+  width: 1px;
+  background: var(--border);
+  cursor: col-resize;
+  transition: background-color var(--duration-fast);
+}
+
+/* The pointer target is wider than the visible hairline */
+.resize-separator::after {
+  position: absolute;
+  inset: 0 -3px;
+  content: "";
+}
+
+.resize-separator:hover,
+.resize-separator:focus-visible {
+  outline: none;
+  background: var(--accent);
+}
+
+.status-bar {
+  display: flex;
+  align-items: center;
+  padding: 0 4px;
+  border-top: 1px solid var(--border);
+  background: var(--surface-raised);
+  color: var(--text-secondary);
+  font-size: var(--font-size-small);
+}
+
+.status-item {
+  padding: 0 8px;
+  white-space: nowrap;
+}
+
+.status-item-numeric {
+  font-variant-numeric: tabular-nums;
+}
+
+.status-bar-end {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
+}

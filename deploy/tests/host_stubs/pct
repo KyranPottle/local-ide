@@ -1,0 +1,129 @@
+#!/usr/bin/env bash
+set -euo pipefail
+# shellcheck source=stub_log.sh
+source "$(dirname "$0")/stub_log.sh"
+record_call "$@"
+
+command=$1
+id=${2:-}
+container="${SANDBOX}/scenario/containers/${id}"
+guest="${SANDBOX}/guest/${id}"
+inference_key=sk-fake-4b1d9e72c0
+
+create_container() {
+  local hostname="" rootfs="" net0=""
+  while [[ $# -gt 0 ]]; do
+    case $1 in
+      --hostname) hostname=$2 ;;
+      --rootfs) rootfs=$2 ;;
+      --net0) net0=$2 ;;
+    esac
+    shift
+  done
+  mkdir -p "$container" "$guest"
+  printf 'hostname: %s\nrootfs: %s\nnet0: %s\n' "$hostname" "$rootfs" "$net0" >"${container}/config"
+  printf 'stopped\n' >"${container}/status"
+}
+
+run_guest_script() {
+  case $1 in
+    *key.env.next*)
+      umask 077
+      cat >"${guest}/etc/local-ide/key.env.next"
+      if [[ ! -s ${guest}/etc/local-ide/key.env.next ]]; then
+        rm -f "${guest}/etc/local-ide/key.env.next"
+        return 1
+      fi
+      mv -f "${guest}/etc/local-ide/key.env.next" "${guest}/etc/local-ide/key.env"
+      ;;
+    *release.tar.gz*)
+      local staging install_dir="${guest}/opt/local-ide"
+      staging=$(mktemp -d "${SANDBOX}/staging.XXXXXX")
+      tar -xzf "${install_dir}/release.tar.gz" -C "$staging" --strip-components=1
+      install -m 755 "${staging}/local-ide" "${install_dir}/local-ide"
+      rm -rf "${install_dir}/web"
+      cp -R "${staging}/web" "${install_dir}/web"
+      install -m 644 "${staging}/VERSION" "${install_dir}/VERSION"
+      rm -rf "$staging" "${install_dir}/release.tar.gz"
+      ;;
+    *) return 64 ;;
+  esac
+}
+
+run_calibration() {
+  local output=""
+  while [[ $# -gt 0 ]]; do
+    [[ $1 == --output ]] && output=$2
+    shift
+  done
+  local status
+  status=$(scenario_value calibration_status 0)
+  [[ $status -eq 0 ]] || return "$status"
+  mkdir -p "$(dirname "${guest}${output}")"
+  printf '[[model]]\n' >"${guest}${output}"
+}
+
+guest_exec() {
+  local argument mapped=()
+  case $1 in
+    systemctl)
+      [[ $2 == is-system-running ]] && printf 'running\n'
+      return 0
+      ;;
+    id)
+      grep -qx "${!#}" "${guest}/etc/passwd" 2>/dev/null || return 1
+      printf '999\n'
+      ;;
+    useradd)
+      mkdir -p "${guest}/etc"
+      printf '%s\n' "${!#}" >>"${guest}/etc/passwd"
+      ;;
+    install) mkdir -p "${guest}${!#}" ;;
+    sh) run_guest_script "$3" ;;
+    systemd-run) run_calibration "$@" ;;
+    test | cat | grep | rm | cp | mv)
+      for argument in "${@:2}"; do
+        if [[ $argument == /* ]]; then
+          mapped+=("${guest}${argument}")
+        else
+          mapped+=("$argument")
+        fi
+      done
+      "$1" "${mapped[@]}"
+      ;;
+    *) return 64 ;;
+  esac
+}
+
+inference_exec() {
+  [[ $1 == grep ]] || return 64
+  local name=${4#^}
+  printf '%s=%s\n' "${name%=.}" "$inference_key"
+}
+
+case $command in
+  config)
+    if [[ ! -f ${container}/config ]]; then
+      printf 'Configuration file nodes/example/lxc/%s.conf does not exist\n' "$id" >&2
+      exit 2
+    fi
+    cat "${container}/config"
+    ;;
+  status) printf 'status: %s\n' "$(cat "${container}/status")" ;;
+  create) create_container "${@:3}" ;;
+  start) printf 'running\n' >"${container}/status" ;;
+  push)
+    mkdir -p "$(dirname "${guest}$4")"
+    cp "$3" "${guest}$4"
+    ;;
+  pull) cp "${guest}$3" "$4" ;;
+  exec)
+    [[ -f ${container}/config ]] || exit 2
+    if [[ $id == 200 ]]; then
+      inference_exec "${@:4}"
+    else
+      guest_exec "${@:4}"
+    fi
+    ;;
+  *) exit 64 ;;
+esac

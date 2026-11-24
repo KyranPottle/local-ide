@@ -1,0 +1,74 @@
+:root {
+  color-scheme: light dark;
+
+  --font-ui: "Inter Variable", system-ui, sans-serif;
+  --font-code: "JetBrains Mono Variable", ui-monospace, monospace;
+  --font-size-ui: 13px;
+  --font-size-small: 12px;
+  --font-size-code: 13px;
+  --line-height-ui: 1.4;
+  --line-height-code: 1.5;
+
+  --radius-small: 4px;
+  --radius-medium: 6px;
+  --duration-fast: 90ms;
+
+  --top-bar-height: 36px;
+  --tab-strip-height: 34px;
+  --status-bar-height: 22px;
+  --row-height: 22px;
+
+  --surface-base: light-dark(#f9f9fb, #17181b);
+  --surface-raised: light-dark(#f1f2f5, #1c1d21);
+  --surface-overlay: light-dark(#fcfcfd, #212227);
+  --surface-hover: light-dark(#e8e9ee, #25272c);
+  --surface-selected: light-dark(#dfe1e8, #2c2e35);
+  --surface-backdrop: light-dark(rgb(31 33 38 / 0.2), rgb(10 11 13 / 0.5));
+
+  --border: light-dark(#dcdee4, #2a2c32);
+  --border-strong: light-dark(#c3c6cf, #3b3e46);
+  --shadow-overlay: 0 6px 20px light-dark(rgb(31 33 38 / 0.12), rgb(0 0 0 / 0.28));
+
+  --text-primary: light-dark(#1f2126, #d3d4d6);
+  --text-secondary: light-dark(#4a4e57, #a9acb3);
+  --text-tertiary: light-dark(#5f636d, #9296a0);
+
+  --accent: light-dark(#3a62a3, #86a8dc);
+  --accent-surface: light-dark(#3a62a3, #3f6096);
+  --accent-surface-hover: light-dark(#325690, #486ba5);
+  --accent-on-surface: light-dark(#f4f6fa, #eef1f6);
+
+  --error: light-dark(#a53f3c, #dc8a85);
+  --warning: light-dark(#7d5a12, #d3ae6e);
+  --success: light-dark(#2f6f43, #8cbf92);
+  --diff-added: var(--success);
+  --diff-added-surface: light-dark(#e1f0e4, #1f3226);
+  --diff-removed: var(--error);
+  --diff-removed-surface: light-dark(#f8e3e1, #3a2325);
+
+  --editor-selection: light-dark(#cddaf2, #2e3d59);
+  --editor-active-line: light-dark(rgb(31 33 38 / 0.04), rgb(211 212 214 / 0.04));
+  --editor-match: light-dark(#ece3c0, #453f2c);
+  --editor-match-selected: light-dark(#e0cf8e, #6a5d33);
+
+  --syntax-keyword: light-dark(#6b4fa8, #a99bdc);
+  --syntax-string: light-dark(#3c6e3f, #9bbd8e);
+  --syntax-constant: light-dark(#96541a, #d3a47c);
+  --syntax-function: light-dark(#2c5c9c, #86abdc);
+  --syntax-type: light-dark(#1c6c66, #7dbdb6);
+  --syntax-tag: light-dark(#a2414d, #d89099);
+}
+
+:root[data-color-scheme="light"] {
+  color-scheme: light;
+}
+
+:root[data-color-scheme="dark"] {
+  color-scheme: dark;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  :root {
+    --duration-fast: 0ms;
+  }
+}

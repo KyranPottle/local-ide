@@ -1,0 +1,55 @@
+listen = "127.0.0.1:7878"
+public_origin = "http://127.0.0.1:5173"
+allowed_peers = ["127.0.0.1"]
+data_dir = "./var"
+assets_dir = "./web/dist"
+step_limit = 25
+tool_output_limit = 6000
+tool_timeout_seconds = 300
+
+# Instructions for every new session. At most 2000 characters. Blank adds none.
+# E.g.
+# system_rules = """
+# ## Code
+# 
+# Prefer clarity, auditability, and elegance over efficiency. Change only the code this task touches. Fold a touched duplicate into one source. Inline a pure forwarder unless it names a module boundary, keeps a public API stable, or adapts an interface. Use a lookup table or map for a key to a value. Use an exhaustive match or switch for one enum or tagged union. Use guard clauses and early returns. No nested ternaries. Skip a check that an outer branch, an earlier guard, or the type already rules out. Make illegal states unrepresentable: an enum or tagged union, not flags and nullable fields. Validate input and authorization once at entry, then pass the validated type inward. Search before you add a function with the same rule. Keep one source for each rule or calculation. Put code in the owning module. Use only the public interface of another module, never its internals or call order. Do not delete, skip, or weaken a test to make a change pass. A test must not copy the production formula as its expected value. No commented-out code. No TODO, FIXME, or HACK without an owner or a ticket.
+# 
+# ## Comments
+# 
+# Add no comment by default. A comment gives the reason, not the action. Valid reasons: intent, a trade off, a constraint the code cannot show, or context that saves a jump to another file. Never restate the code. Write for a senior developer. Inline, sentence case, no semicolon, dash, or trailing period.
+# 
+# ## Naming
+# 
+# Name each file, script, directory, function, variable, type, commit, and branch for what it does. No slang, chat-culture words, puns, or clever names. No generic names such as data, handler, manager, helper, or utils. Keep a short name when the scope is clear.
+# 
+# ## Security
+# 
+# When code handles input, auth, secrets, or external calls, review it as an attacker. Check validation, authorization, arithmetic, bounds, races, secret exposure, and injection. Remove each attack surface. Report only risks that remain, with the reason. Say nothing when none remain.
+# """
+
+[inference]
+base_url = "http://127.0.0.1:8080/v1"
+api_key_env = "LLAMA_SWAP_KEY"
+idle_timeout_seconds = 600
+
+# Copy this file to config/local-ide.toml and put your models in that copy
+# Two tests require the ids in this example file to stay coder then fast
+[[model]]
+id = "coder"
+label = "Coder"
+role = "General coding"
+context_budget = 24000
+reply_reserve = 8192
+tool_codec = "native"
+delegate_target = true
+chars_per_token = 3.5
+
+[[model]]
+id = "fast"
+label = "Fast"
+role = "Small fast model"
+context_budget = 16000
+reply_reserve = 2048
+tool_codec = "text"
+delegate_target = true
+chars_per_token = 3.5

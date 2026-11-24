@@ -1,0 +1,115 @@
+.editor-area {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  background: var(--surface-base);
+}
+
+.editor-tabs {
+  display: flex;
+  flex: none;
+  height: var(--tab-strip-height);
+  overflow-x: auto;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-raised);
+  scrollbar-width: none;
+}
+
+.editor-tab {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 6px;
+  max-width: 240px;
+  /* The negative margin puts the tab over the border of the strip, so the selected tab joins the editor */
+  margin-bottom: -1px;
+  padding: 0 6px 0 12px;
+  border-top: 1px solid transparent;
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition:
+    background-color var(--duration-fast),
+    color var(--duration-fast);
+}
+
+.editor-tab:hover {
+  color: var(--text-primary);
+}
+
+.editor-tab[aria-selected="true"] {
+  border-top-color: var(--accent);
+  border-bottom-color: var(--surface-base);
+  background: var(--surface-base);
+  color: var(--text-primary);
+}
+
+.editor-tab-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.editor-tab-close::before {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--text-secondary);
+}
+
+.editor-tab[data-state="saved"]:not([aria-selected="true"], :hover) .editor-tab-close {
+  visibility: hidden;
+}
+
+.editor-tab:not([data-state="saved"], :hover) .editor-tab-close .icon {
+  display: none;
+}
+
+.editor-tab:not([data-state="saved"], :hover) .editor-tab-close::before {
+  content: "";
+}
+
+.editor-conflict {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface-raised);
+  color: var(--warning);
+  font-size: var(--font-size-small);
+}
+
+.editor-conflict .button {
+  color: var(--text-primary);
+}
+
+.code-editor {
+  flex: 1;
+  min-height: 0;
+}
+
+.editor-hints {
+  display: grid;
+  flex: 1;
+  align-content: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 0;
+  color: var(--text-tertiary);
+}
+
+.editor-hint {
+  display: flex;
+  justify-content: space-between;
+  gap: 32px;
+}
+
+.editor-hint dd {
+  margin: 0;
+  font-variant-numeric: tabular-nums;
+}

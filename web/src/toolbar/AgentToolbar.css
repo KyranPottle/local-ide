@@ -1,0 +1,232 @@
+.popover-root {
+  position: relative;
+  display: flex;
+}
+
+.popover {
+  position: absolute;
+  top: calc(100% + 4px);
+  right: 0;
+  z-index: 20;
+  min-width: 200px;
+  padding: 4px;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-medium);
+  background: var(--surface-overlay);
+  box-shadow: var(--shadow-overlay);
+}
+
+.toolbar-button {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  max-width: 220px;
+  height: 26px;
+  padding: 0 6px 0 8px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-small);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: var(--font-size-small);
+  cursor: pointer;
+  transition: background-color var(--duration-fast), color var(--duration-fast);
+}
+
+.toolbar-button:hover {
+  background: var(--surface-hover);
+  color: var(--text-primary);
+}
+
+.toolbar-button[aria-expanded="true"] {
+  background: var(--surface-selected);
+  color: var(--text-primary);
+}
+
+.toolbar-button[aria-disabled="true"] {
+  color: var(--text-tertiary);
+  cursor: default;
+}
+
+.toolbar-button[aria-disabled="true"]:hover {
+  background: transparent;
+}
+
+.toolbar-button-text {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.toolbar-button-chevron {
+  display: grid;
+  transform: rotate(90deg);
+}
+
+.toolbar-button-chevron .icon {
+  width: 12px;
+  height: 12px;
+}
+
+.context-meter {
+  padding: 0 8px;
+}
+
+.context-meter-bar {
+  position: relative;
+  width: 48px;
+  height: 3px;
+  overflow: hidden;
+  border-radius: 2px;
+  background: var(--border);
+}
+
+.context-meter-bar > span {
+  position: absolute;
+  inset: 0 auto 0 0;
+  background: var(--accent);
+}
+
+.context-meter-warning > span {
+  background: var(--warning);
+}
+
+.context-meter-over > span {
+  background: var(--error);
+}
+
+.context-meter-text {
+  font-family: var(--font-code);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.context-breakdown {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 2px 16px;
+  margin: 0;
+  padding: 4px 8px;
+  font-size: var(--font-size-small);
+}
+
+.context-breakdown dt {
+  color: var(--text-secondary);
+}
+
+.context-breakdown dd {
+  margin: 0;
+  font-family: var(--font-code);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.context-breakdown dt:nth-last-of-type(1),
+.context-breakdown dd:nth-last-of-type(1) {
+  padding-top: 3px;
+  border-top: 1px solid var(--border);
+}
+
+.model-menu {
+  width: 280px;
+  max-height: min(420px, 70vh);
+  overflow-y: auto;
+}
+
+.model-menu-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0 8px;
+  width: 100%;
+  padding: 4px 8px;
+  border: 0;
+  border-radius: var(--radius-small);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.model-menu-item:hover,
+.model-menu-item:focus-visible {
+  background: var(--surface-hover);
+}
+
+.model-menu-item[aria-checked="true"] {
+  background: var(--surface-selected);
+}
+
+.model-menu-item[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: default;
+}
+
+.model-menu-item[aria-disabled="true"]:hover {
+  background: transparent;
+}
+
+.model-menu-label {
+  overflow: hidden;
+  font-weight: 500;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.model-menu-budget {
+  color: var(--text-tertiary);
+  font: var(--font-size-small) / var(--line-height-ui) var(--font-code);
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+}
+
+.model-menu-role {
+  overflow: hidden;
+  color: var(--text-secondary);
+  font-size: var(--font-size-small);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.model-menu-offline {
+  color: var(--text-tertiary);
+  font-size: var(--font-size-small);
+  text-align: right;
+}
+
+.settings-menu {
+  width: 220px;
+}
+
+.settings-menu-heading {
+  margin: 2px 8px 4px;
+  color: var(--text-tertiary);
+  font-size: var(--font-size-small);
+  font-weight: 500;
+}
+
+.settings-menu-option {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  height: var(--row-height);
+  padding: 0 8px 0 4px;
+  border: 0;
+  border-radius: var(--radius-small);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.settings-menu-option:hover {
+  background: var(--surface-hover);
+}
+
+.settings-menu-check {
+  display: grid;
+  width: 16px;
+  color: var(--accent);
+}
+
+.settings-menu-check .icon {
+  width: 14px;
+  height: 14px;
+}

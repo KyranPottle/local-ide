@@ -1,0 +1,83 @@
+.file-finder-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 20;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 12vh;
+  background: var(--surface-backdrop);
+}
+
+.file-finder {
+  display: flex;
+  flex-direction: column;
+  width: min(560px, 90vw);
+  max-height: 60vh;
+  overflow: hidden;
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-medium);
+  background: var(--surface-overlay);
+  box-shadow: var(--shadow-overlay);
+}
+
+.file-finder-input {
+  flex: none;
+  height: 36px;
+  padding: 0 12px;
+  border: 0;
+  border-bottom: 1px solid var(--border);
+  outline: none;
+  background: transparent;
+}
+
+.file-finder-input::placeholder {
+  color: var(--text-tertiary);
+}
+
+.file-finder-results {
+  min-height: 0;
+  padding: 4px;
+  overflow: auto;
+}
+
+.file-finder-results:empty {
+  display: none;
+}
+
+.file-finder-result {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  height: 26px;
+  padding: 0 8px;
+  border-radius: var(--radius-small);
+  line-height: 26px;
+  cursor: pointer;
+}
+
+.file-finder-result:hover {
+  background: var(--surface-hover);
+}
+
+.file-finder-result[aria-selected="true"] {
+  background: var(--surface-selected);
+}
+
+.file-finder-name {
+  flex: none;
+}
+
+.file-finder-directory {
+  overflow: hidden;
+  color: var(--text-tertiary);
+  font-size: var(--font-size-small);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-finder-status {
+  margin: 0;
+  padding: 10px 12px;
+  color: var(--text-tertiary);
+}

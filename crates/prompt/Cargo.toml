@@ -1,0 +1,15 @@
+[package]
+name = "prompt"
+description = "Rendering of a session event log for one model profile within its context budget"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+protocol.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+
+[lints]
+workspace = true

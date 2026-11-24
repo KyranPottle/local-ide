@@ -1,0 +1,23 @@
+[package]
+name = "inference"
+description = "Streaming client for the llama-swap chat completions endpoint"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+
+[dependencies]
+protocol.workspace = true
+bytes.workspace = true
+futures-util.workspace = true
+reqwest.workspace = true
+serde.workspace = true
+serde_json.workspace = true
+thiserror.workspace = true
+tokio.workspace = true
+tracing.workspace = true
+
+[lints]
+workspace = true
+
+[dev-dependencies]
+axum.workspace = true

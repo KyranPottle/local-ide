@@ -1,0 +1,30 @@
+[Unit]
+Description=local-ide engine
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=exec
+User=local-ide
+Group=local-ide
+EnvironmentFile=/etc/local-ide/key.env
+ExecStart=/opt/local-ide/local-ide --config /etc/local-ide/config.toml
+Restart=on-failure
+RestartSec=2
+StateDirectory=local-ide
+StateDirectoryMode=0750
+UMask=0077
+MemoryMax=192M
+NoNewPrivileges=yes
+ProtectSystem=strict
+ProtectHome=yes
+PrivateTmp=yes
+PrivateDevices=yes
+CapabilityBoundingSet=
+RestrictAddressFamilies=AF_INET AF_INET6 AF_UNIX
+LockPersonality=yes
+RestrictSUIDSGID=yes
+SystemCallArchitectures=native
+
+[Install]
+WantedBy=multi-user.target

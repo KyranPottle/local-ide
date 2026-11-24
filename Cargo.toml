@@ -1,0 +1,37 @@
+[workspace]
+resolver = "3"
+members = ["crates/*"]
+
+[workspace.package]
+version = "0.1.7"
+edition = "2024"
+publish = false
+
+[workspace.dependencies]
+protocol = { path = "crates/protocol" }
+session-store = { path = "crates/session-store" }
+prompt = { path = "crates/prompt" }
+inference = { path = "crates/inference" }
+
+axum = { version = "0.8.9", features = ["ws"] }
+bytes = "1.12.2"
+futures-util = "0.3.34"
+regex = "1.13.2"
+reqwest = { version = "0.13.5", default-features = false, features = ["json", "stream"] }
+rusqlite = { version = "0.43.0", features = ["bundled"] }
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+thiserror = "2.0.21"
+tokio = { version = "1.54.1", features = ["full"] }
+toml = "1.2.2"
+tower-http = { version = "0.7.1", features = ["fs", "compression-br", "compression-gzip", "trace"] }
+tracing = "0.1.44"
+tracing-subscriber = "0.3.23"
+ts-rs = { version = "12.0.1", features = ["serde-json-impl"] }
+uuid = { version = "1.29.3", features = ["v7", "serde"] }
+
+[workspace.lints.rust]
+unsafe_code = "forbid"
+
+[workspace.lints.clippy]
+all = { level = "warn", priority = -1 }

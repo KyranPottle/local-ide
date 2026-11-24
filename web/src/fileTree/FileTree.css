@@ -1,0 +1,86 @@
+.file-tree {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-height: 0;
+}
+
+.file-tree-header {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  height: 28px;
+  padding: 0 6px 0 12px;
+  color: var(--text-secondary);
+  font-size: var(--font-size-small);
+  font-weight: 500;
+}
+
+.file-tree-title {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-tree-items {
+  flex: 1;
+  min-height: 0;
+  padding-bottom: 8px;
+  overflow: auto;
+  outline: none;
+}
+
+.file-tree-items:focus-visible:not(:has(.file-tree-item-cursor)) {
+  outline: 1.5px solid var(--accent);
+  outline-offset: -1.5px;
+}
+
+.file-tree-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: var(--row-height);
+  padding-right: 8px;
+  cursor: pointer;
+  transition: background-color var(--duration-fast);
+}
+
+.file-tree-row:hover {
+  background: var(--surface-hover);
+}
+
+.file-tree-item[aria-selected="true"] > .file-tree-row {
+  background: var(--surface-selected);
+}
+
+.file-tree-items:focus .file-tree-item-cursor > .file-tree-row {
+  outline: 1px solid var(--accent);
+  outline-offset: -1px;
+}
+
+.file-tree-row .icon {
+  color: var(--text-tertiary);
+}
+
+.file-tree-chevron {
+  display: grid;
+  flex: none;
+  width: 16px;
+  height: 16px;
+  transition: rotate var(--duration-fast);
+}
+
+.file-tree-chevron-expanded {
+  rotate: 90deg;
+}
+
+.file-tree-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.file-tree-item-dimmed > .file-tree-row .file-tree-name {
+  color: var(--text-tertiary);
+}
